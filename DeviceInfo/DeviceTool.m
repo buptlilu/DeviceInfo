@@ -168,7 +168,7 @@
                 NSLog(@"获取加速计数据出现错误");
             }else {
                 //获取加速计信息
-                self.accelerometerData = [self formattingStringWithX:accelerometerData.acceleration.x y:accelerometerData.acceleration.y z:accelerometerData.acceleration.z];
+                self.accelerometerData = [NSString stringWithFormat:@"&sen_acc=%@", [self formattingStringWithX:accelerometerData.acceleration.x y:accelerometerData.acceleration.y z:accelerometerData.acceleration.z]];
             }
         }];
     }
@@ -180,7 +180,7 @@
             if (error) {
                 NSLog(@"获取陀螺仪数据出现错误");
             }else {
-                self.gyroData = [self formattingStringWithX:gyroData.rotationRate.x y:gyroData.rotationRate.y z:gyroData.rotationRate.z];
+                self.gyroData = [NSString stringWithFormat:@"&sen_gyr=%@", [self formattingStringWithX:gyroData.rotationRate.x y:gyroData.rotationRate.y z:gyroData.rotationRate.z]];
             }
         }];
     }
@@ -192,7 +192,7 @@
             if (error) {
                 NSLog(@"获取磁场数据失败");
             }else{
-                self.magnetometerData = [self formattingStringWithX:magnetometerData.magneticField.x y:magnetometerData.magneticField.y z:magnetometerData.magneticField.z];
+                self.magnetometerData = [NSString stringWithFormat:@"&sen_magn=%@", [self formattingStringWithX:magnetometerData.magneticField.x y:magnetometerData.magneticField.y z:magnetometerData.magneticField.z]];
             }
         }];
     }
@@ -204,8 +204,8 @@
             if (error) {
                 NSLog(@"获取device数据失败");
             }else{
-                self.rotationRateData = [self formattingStringWithX:motion.rotationRate.x y:motion.rotationRate.y z:motion.rotationRate.z];
-                self.gravityData = [self formattingStringWithX:motion.gravity.x y:motion.gravity.y z:motion.gravity.z];
+                self.rotationRateData = [NSString stringWithFormat:@"&sen_rota=%@", [self formattingStringWithX:motion.rotationRate.x y:motion.rotationRate.y z:motion.rotationRate.z]];
+                self.gravityData = [NSString stringWithFormat:@"&sen_gra=%@", [self formattingStringWithX:motion.gravity.x y:motion.gravity.y z:motion.gravity.z]];
             }
         }];
     }
