@@ -15,6 +15,7 @@
 		2C0DF8241ED4429A004731C5 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 2C0DF8221ED4429A004731C5 /* LaunchScreen.storyboard */; };
 		2C0DF82F1ED4429A004731C5 /* DeviceInfoTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 2C0DF82E1ED4429A004731C5 /* DeviceInfoTests.m */; };
 		2C0DF83A1ED4429A004731C5 /* DeviceInfoUITests.m in Sources */ = {isa = PBXBuildFile; fileRef = 2C0DF8391ED4429A004731C5 /* DeviceInfoUITests.m */; };
+		2C0DF8491ED453B7004731C5 /* DeviceTool.m in Sources */ = {isa = PBXBuildFile; fileRef = 2C0DF8481ED453B7004731C5 /* DeviceTool.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -51,6 +52,8 @@
 		2C0DF8351ED4429A004731C5 /* DeviceInfoUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = DeviceInfoUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		2C0DF8391ED4429A004731C5 /* DeviceInfoUITests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = DeviceInfoUITests.m; sourceTree = "<group>"; };
 		2C0DF83B1ED4429A004731C5 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		2C0DF8471ED453B7004731C5 /* DeviceTool.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DeviceTool.h; sourceTree = "<group>"; };
+		2C0DF8481ED453B7004731C5 /* DeviceTool.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DeviceTool.m; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -101,6 +104,8 @@
 		2C0DF8131ED4429A004731C5 /* DeviceInfo */ = {
 			isa = PBXGroup;
 			children = (
+				2C0DF8471ED453B7004731C5 /* DeviceTool.h */,
+				2C0DF8481ED453B7004731C5 /* DeviceTool.m */,
 				2C0DF8171ED4429A004731C5 /* AppDelegate.h */,
 				2C0DF8181ED4429A004731C5 /* AppDelegate.m */,
 				2C0DF81A1ED4429A004731C5 /* ViewController.h */,
@@ -277,6 +282,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				2C0DF81C1ED4429A004731C5 /* ViewController.m in Sources */,
+				2C0DF8491ED453B7004731C5 /* DeviceTool.m in Sources */,
 				2C0DF8191ED4429A004731C5 /* AppDelegate.m in Sources */,
 				2C0DF8161ED4429A004731C5 /* main.m in Sources */,
 			);
@@ -518,6 +524,7 @@
 				2C0DF8401ED4429A004731C5 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 		2C0DF8411ED4429A004731C5 /* Build configuration list for PBXNativeTarget "DeviceInfoTests" */ = {
 			isa = XCConfigurationList;
@@ -526,6 +533,7 @@
 				2C0DF8431ED4429A004731C5 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 		2C0DF8441ED4429A004731C5 /* Build configuration list for PBXNativeTarget "DeviceInfoUITests" */ = {
 			isa = XCConfigurationList;
@@ -534,6 +542,7 @@
 				2C0DF8461ED4429A004731C5 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
 	};

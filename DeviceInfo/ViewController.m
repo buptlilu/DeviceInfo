@@ -7,6 +7,7 @@
 //
 
 #import "ViewController.h"
+#import "DeviceTool.h"
 
 @interface ViewController () <UITableViewDelegate, UITableViewDataSource>
 @property (nonatomic, strong) UITableView *tableView;
@@ -47,41 +48,63 @@
     if (!cell) {
         cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleValue1 reuseIdentifier:ID];
     }
+    NSString *title;
+    NSString *detail;
     switch (indexPath.row) {
         case 0:{
-            cell.textLabel.text = @"电池电量";
+            title = @"电池电量";
             //电池相关
-            [UIDevice currentDevice].batteryMonitoringEnabled = YES;
-            CGFloat batteryLevel = [[UIDevice currentDevice] batteryLevel];
+            CGFloat batteryLevel = [DeviceTool getBatteryQuantity];
             NSLog(@"batteryLevel:%f", batteryLevel);
-            cell.detailTextLabel.text = [NSString stringWithFormat:@"batteryLevel:%f", batteryLevel];
+            detail = [NSString stringWithFormat:@"batteryLevel:%f", batteryLevel];
             break;
         }
         case 1:{
-            cell.textLabel.text = @"电池状态";
+            title = @"电池状态";
             /*typedef NS_ENUM(NSInteger, UIDeviceBatteryState) {
                 UIDeviceBatteryStateUnknown,
                 UIDeviceBatteryStateUnplugged,   // on battery, discharging
-                UIDeviceBatteryStateCharging,    // plugged in, less than 100%
+                UIDevicBatteryStateCharging,    // plugged in, less than 100%
                 UIDeviceBatteryStateFull,        // plugged in, at 100%
             }*/
             //电池相关
-            [UIDevice currentDevice].batteryMonitoringEnabled = YES;
-            UIDeviceBatteryState batteryState = [[UIDevice currentDevice] batteryState];
+            UIDeviceBatteryState batteryState = [DeviceTool getBatteryStauts];
             NSLog(@"batteryState:%ld", (long)batteryState);
-            cell.detailTextLabel.text = [NSString stringWithFormat:@"batteryState:%ld", (long)batteryState];
+            detail = [NSString stringWithFormat:@"batteryState:%ld", (long)batteryState];
             break;
         }
         case 2:{
-            
+            title = @"总内存";
+            detail = [DeviceTool fileSizeToString:[DeviceTool getTotalMemorySize]];
             break;
         }
-            
+        case 3:{
+            title = @"已使用内存(不准)";
+            detail = [DeviceTool fileSizeToString:[DeviceTool getUsedMemory]];
+            break;
+        }
+        case 4:{
+            title = @"可用内存";
+            detail = [DeviceTool fileSizeToString:[DeviceTool getAvailableMemorySize]];
+            break;
+        }
+        case 5:{
+            title = @"总磁盘容量";
+            detail = [DeviceTool fileSizeToString:[DeviceTool getTotalDiskSize]];
+            break;
+        }
+        case 6:{
+            title = @"可用磁盘容量";
+            detail = [DeviceTool fileSizeToString:[DeviceTool getAvailableDiskSize]];
+            break;
+        }
         default:
-            cell.textLabel.text = @"Device";
-            cell.detailTextLabel.text = @"Info";
+            title = @"Device";
+            detail = @"Info";
             break;
     }
+    cell.textLabel.text = title;
+    cell.detailTextLabel.text = detail;
     return cell;
 }
 @end
