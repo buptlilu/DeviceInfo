@@ -212,7 +212,7 @@
 }
 
 - (NSString *)formattingStringWithX:(CGFloat)x y:(CGFloat)y z:(CGFloat)z {
-    return [NSString stringWithFormat:@"&{\"0\":%f,\"1\":%f,\"2\":%f}", x, y, z];
+    return [NSString stringWithFormat:@"{\"0\":%f,\"1\":%f,\"2\":%f}", x, y, z];
 }
 
 - (void)stopUpdateCMDatas {
