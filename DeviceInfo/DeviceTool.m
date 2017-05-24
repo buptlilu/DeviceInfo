@@ -23,6 +23,18 @@
 @property (nonatomic, copy) NSString *rotationRateData;
 //重力
 @property (nonatomic, copy) NSString *gravityData;
+
+//获取总内存大小
++ (long long)getTotalMemorySize;
+//获取当前可用内存
++ (long long)getAvailableMemorySize;
+//获取已使用内存
++ (double)getUsedMemorySize;
+//获取总磁盘容量
++ (long long)getTotalDiskSize;
+//获取可用磁盘容量
++ (long long)getAvailableDiskSize;
+
 @end
 
 @implementation DeviceTool
@@ -39,19 +51,31 @@
 }
 
 #pragma mark - 电池相关
-+ (CGFloat)getBatteryQuantity{
++ (NSString *)getBatteryQuantity{
     [UIDevice currentDevice].batteryMonitoringEnabled = YES;
-    return [[UIDevice currentDevice] batteryLevel];
+    int batteryLevel = (int)([[UIDevice currentDevice] batteryLevel] * 100);
+    NSString *str = [NSString stringWithFormat:@"&bat_lev=%d&bat_sca=100", batteryLevel];
+    return str;
 }
 
-+ (UIDeviceBatteryState)getBatteryStauts {
++ (NSString *)getBatteryStauts {
     [UIDevice currentDevice].batteryMonitoringEnabled = YES;
-    return [UIDevice currentDevice].batteryState;
+    return [NSString stringWithFormat:@"&bat_plu=%d", [UIDevice currentDevice].batteryState];
 }
 
 #pragma mark - 存储相关
+//获取总内存大小
++ (NSString *)getTotalMemory {
+    return [self fileSizeToString:[self getTotalMemorySize]];
+}
+
 + (long long)getTotalMemorySize {
     return [NSProcessInfo processInfo].physicalMemory;
+}
+
+//获取当前可用内存
++ (NSString *)getAvailableMemory {
+    return [self fileSizeToString:[self getAvailableMemorySize]];
 }
 
 + (long long)getAvailableMemorySize {
@@ -65,7 +89,12 @@
     return ((vm_page_size * vmStats.free_count + vm_page_size * vmStats.inactive_count));
 }
 
-+ (double)getUsedMemory {
+//获取已使用内存
++ (NSString *)getUsedMemory {
+    return [self fileSizeToString:[self getUsedMemorySize]];
+}
+
++ (double)getUsedMemorySize {
     task_basic_info_data_t taskInfo;
     mach_msg_type_number_t infoCount = TASK_BASIC_INFO_COUNT;
     kern_return_t kernReturn = task_info(mach_task_self(),
@@ -81,6 +110,11 @@
     return taskInfo.resident_size;
 }
 
+//获取总磁盘容量
++ (NSString *)getTotalDisk {
+    return [self fileSizeToString:[self getTotalDiskSize]];
+}
+
 + (long long)getTotalDiskSize {
     struct statfs buf;
     unsigned long long freeSpace = -1;
@@ -89,6 +123,11 @@
         freeSpace = (unsigned long long)(buf.f_bsize * buf.f_blocks);
     }
     return freeSpace;
+}
+
+//获取可用磁盘容量
++ (NSString *)getAvailableDisk {
+    return [self fileSizeToString:[self getAvailableMemorySize]];
 }
 
 + (long long)getAvailableDiskSize {
@@ -111,11 +150,11 @@
     }else if (fileSize < KB)    {
         return @"< 1 KB";
     }else if (fileSize < MB)    {
-        return [NSString stringWithFormat:@"%.1f KB",((CGFloat)fileSize)/KB];
+        return [NSString stringWithFormat:@"%dK",(int)(fileSize/KB)];
     }else if (fileSize < GB)    {
-        return [NSString stringWithFormat:@"%.1f MB",((CGFloat)fileSize)/MB];
+        return [NSString stringWithFormat:@"%dM",(int)(fileSize/MB)];
     }else   {
-        return [NSString stringWithFormat:@"%.1f GB",((CGFloat)fileSize)/GB];
+        return [NSString stringWithFormat:@"%dG",(int)(fileSize/GB)];
     }
 }
 
@@ -129,8 +168,7 @@
                 NSLog(@"获取加速计数据出现错误");
             }else {
                 //获取加速计信息
-                CMAcceleration acceleration = accelerometerData.acceleration;
-                self.accelerometerData = [NSString stringWithFormat:@"加速计Accelerayion_X:%f Y:%f Z:%f",acceleration.x,acceleration.y,acceleration.z];
+                self.accelerometerData = [self formattingStringWithX:accelerometerData.acceleration.x y:accelerometerData.acceleration.y z:accelerometerData.acceleration.z];
             }
         }];
     }
@@ -142,7 +180,7 @@
             if (error) {
                 NSLog(@"获取陀螺仪数据出现错误");
             }else {
-                self.gyroData = [NSString stringWithFormat:@"陀螺仪gyro:%f Y:%f Z:%f",gyroData.rotationRate.x,gyroData.rotationRate.y,gyroData.rotationRate.z];
+                self.gyroData = [self formattingStringWithX:gyroData.rotationRate.x y:gyroData.rotationRate.y z:gyroData.rotationRate.z];
             }
         }];
     }
@@ -154,7 +192,7 @@
             if (error) {
                 NSLog(@"获取磁场数据失败");
             }else{
-                self.magnetometerData = [NSString stringWithFormat:@"磁场magnet_X:%f Y:%f Z:%f",magnetometerData.magneticField.x,magnetometerData.magneticField.y,magnetometerData.magneticField.z];
+                self.magnetometerData = [self formattingStringWithX:magnetometerData.magneticField.x y:magnetometerData.magneticField.y z:magnetometerData.magneticField.z];
             }
         }];
     }
@@ -166,11 +204,15 @@
             if (error) {
                 NSLog(@"获取device数据失败");
             }else{
-                self.rotationRateData = [NSString stringWithFormat:@"旋转rotation_X:%f Y:%f Z:%f",motion.rotationRate.x,motion.rotationRate.y,motion.rotationRate.z];
-                self.gravityData = [NSString stringWithFormat:@"重力gravity_X:%f Y:%f Z:%f",motion.gravity.x,motion.gravity.y,motion.gravity.z];
+                self.rotationRateData = [self formattingStringWithX:motion.rotationRate.x y:motion.rotationRate.y z:motion.rotationRate.z];
+                self.gravityData = [self formattingStringWithX:motion.gravity.x y:motion.gravity.y z:motion.gravity.z];
             }
         }];
     }
+}
+
+- (NSString *)formattingStringWithX:(CGFloat)x y:(CGFloat)y z:(CGFloat)z {
+    return [NSString stringWithFormat:@"&{\"0\":%f,\"1\":%f,\"2\":%f}", x, y, z];
 }
 
 - (void)stopUpdateCMDatas {
@@ -196,5 +238,9 @@
 
 - (NSString *)getRotationRateData {
     return self.rotationRateData ? : @"";
+}
+
+- (NSString *)getGravityData {
+    return self.gravityData ? : @"";
 }
 @end

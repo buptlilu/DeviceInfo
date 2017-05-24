@@ -71,8 +71,7 @@
         case 0:{
             title = @"电池电量";
             //电池相关
-            CGFloat batteryLevel = [DeviceTool getBatteryQuantity];
-            detail = [NSString stringWithFormat:@"batteryLevel:%f", batteryLevel];
+            detail = [DeviceTool getBatteryQuantity];
             break;
         }
         case 1:{
@@ -84,33 +83,32 @@
                 UIDeviceBatteryStateFull,        // plugged in, at 100%
             }*/
             //电池相关
-            UIDeviceBatteryState batteryState = [DeviceTool getBatteryStauts];
-            detail = [NSString stringWithFormat:@"batteryState:%ld", (long)batteryState];
+            detail = [DeviceTool getBatteryStauts];
             break;
         }
         case 2:{
             title = @"总内存";
-            detail = [DeviceTool fileSizeToString:[DeviceTool getTotalMemorySize]];
+            detail = [DeviceTool getTotalMemory];
             break;
         }
         case 3:{
             title = @"已使用内存(不准)";
-            detail = [DeviceTool fileSizeToString:[DeviceTool getUsedMemory]];
+            detail = [DeviceTool getUsedMemory];
             break;
         }
         case 4:{
             title = @"可用内存";
-            detail = [DeviceTool fileSizeToString:[DeviceTool getAvailableMemorySize]];
+            detail = [DeviceTool getAvailableMemory];
             break;
         }
         case 5:{
             title = @"总磁盘容量";
-            detail = [DeviceTool fileSizeToString:[DeviceTool getTotalDiskSize]];
+            detail = [DeviceTool getTotalDisk];
             break;
         }
         case 6:{
             title = @"可用磁盘容量";
-            detail = [DeviceTool fileSizeToString:[DeviceTool getAvailableDiskSize]];
+            detail = [DeviceTool getAvailableDisk];
             break;
         }
         case 7:{

@@ -16,21 +16,21 @@
 
 #pragma mark - 电池相关
 //获取电池电量
-+ (CGFloat)getBatteryQuantity;
++ (NSString *)getBatteryQuantity;
 //获取电池状态
-+ (UIDeviceBatteryState)getBatteryStauts;
++ (NSString *)getBatteryStauts;
 
 #pragma mark - 存储相关
 //获取总内存大小
-+ (long long)getTotalMemorySize;
++ (NSString *)getTotalMemory;
 //获取当前可用内存
-+ (long long)getAvailableMemorySize;
++ (NSString *)getAvailableMemory;
 //获取已使用内存
-+ (double)getUsedMemory;
++ (NSString *)getUsedMemory;
 //获取总磁盘容量
-+ (long long)getTotalDiskSize;
++ (NSString *)getTotalDisk;
 //获取可用磁盘容量
-+ (long long)getAvailableDiskSize;
++ (NSString *)getAvailableDisk;
 //容量转换
 + (NSString *)fileSizeToString:(unsigned long long)fileSize;
 
