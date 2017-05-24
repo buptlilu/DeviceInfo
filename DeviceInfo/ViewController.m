@@ -20,6 +20,11 @@
     [super viewDidLoad];
     
     [self setUpViews];
+    
+    //1.距离传感器  iPhone才有
+    [UIDevice currentDevice].proximityMonitoringEnabled  =YES;
+    //监听是否有物品靠近
+    [[NSNotificationCenter defaultCenter]addObserver:self selector:@selector(change:) name:UIDeviceProximityStateDidChangeNotification object:nil];
 }
 
 #pragma mark - functions
@@ -31,15 +36,27 @@
     self.tableView = tableView;
 }
 
+- (void)change:(NSNotificationCenter *)center {
+    if ([UIDevice currentDevice].proximityState == YES) {
+        NSLog(@"有物体靠近");
+    }else{
+        NSLog(@"物体离开");
+    }
+}
+
 #pragma mark - UITableViewDelegate
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
     [tableView deselectRowAtIndexPath:indexPath animated:YES];
     [tableView reloadData];
 }
 
+- (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath {
+    return 100;
+}
+
 #pragma mark - UITableViewDataSource
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {
-    return 10;
+    return 20;
 }
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
@@ -55,7 +72,6 @@
             title = @"电池电量";
             //电池相关
             CGFloat batteryLevel = [DeviceTool getBatteryQuantity];
-            NSLog(@"batteryLevel:%f", batteryLevel);
             detail = [NSString stringWithFormat:@"batteryLevel:%f", batteryLevel];
             break;
         }
@@ -69,7 +85,6 @@
             }*/
             //电池相关
             UIDeviceBatteryState batteryState = [DeviceTool getBatteryStauts];
-            NSLog(@"batteryState:%ld", (long)batteryState);
             detail = [NSString stringWithFormat:@"batteryState:%ld", (long)batteryState];
             break;
         }
@@ -98,6 +113,51 @@
             detail = [DeviceTool fileSizeToString:[DeviceTool getAvailableDiskSize]];
             break;
         }
+        case 7:{
+            title = @"加速度计";
+            [[DeviceTool shareInstance] startUpdateCMDatas];
+            dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(0.2 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
+                cell.detailTextLabel.text = [[DeviceTool shareInstance] getAccelerometerData];
+                [[DeviceTool shareInstance] stopUpdateCMDatas];
+            });
+            break;
+        }
+        case 8:{
+            title = @"陀螺仪";
+            [[DeviceTool shareInstance] startUpdateCMDatas];
+            dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(0.2 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
+                cell.detailTextLabel.text = [[DeviceTool shareInstance] getGyroData];
+                [[DeviceTool shareInstance] stopUpdateCMDatas];
+            });
+            break;
+        }
+        case 9:{
+            title = @"磁场";
+            [[DeviceTool shareInstance] startUpdateCMDatas];
+            dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(0.2 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
+                cell.detailTextLabel.text = [[DeviceTool shareInstance] getMagnetometerData];
+                [[DeviceTool shareInstance] stopUpdateCMDatas];
+            });
+            break;
+        }
+        case 10:{
+            title = @"旋转矢量";
+            [[DeviceTool shareInstance] startUpdateCMDatas];
+            dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(0.2 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
+                cell.detailTextLabel.text = [[DeviceTool shareInstance] getRotationRateData];
+                [[DeviceTool shareInstance] stopUpdateCMDatas];
+            });
+            break;
+        }
+        case 11:{
+            title = @"重力";
+            [[DeviceTool shareInstance] startUpdateCMDatas];
+            dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(0.2 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
+                cell.detailTextLabel.text = [[DeviceTool shareInstance] getGravityData];
+                [[DeviceTool shareInstance] stopUpdateCMDatas];
+            });
+            break;
+        }
         default:
             title = @"Device";
             detail = @"Info";
@@ -105,6 +165,7 @@
     }
     cell.textLabel.text = title;
     cell.detailTextLabel.text = detail;
+    cell.detailTextLabel.numberOfLines = 0;
     return cell;
 }
 @end

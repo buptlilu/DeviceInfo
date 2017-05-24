@@ -9,9 +9,34 @@
 #import "DeviceTool.h"
 #import <mach/mach.h>
 #import <sys/mount.h>
+#import <CoreMotion/CMMotionManager.h>
 
+@interface DeviceTool ()
+@property (nonatomic, strong) CMMotionManager *motionManager;
+//加速度计
+@property (nonatomic, copy) NSString *accelerometerData;
+//陀螺仪
+@property (nonatomic, copy) NSString *gyroData;
+//磁场
+@property (nonatomic, copy) NSString *magnetometerData;
+//旋转矢量
+@property (nonatomic, copy) NSString *rotationRateData;
+//重力
+@property (nonatomic, copy) NSString *gravityData;
+@end
 
 @implementation DeviceTool
+
+#pragma mark - init
++ (instancetype)shareInstance {
+    static DeviceTool *tool = nil;
+    static dispatch_once_t onceToken;
+    dispatch_once(&onceToken, ^{
+        tool = [[DeviceTool alloc] init];
+        tool.motionManager = [[CMMotionManager alloc] init];
+    });
+    return tool;
+}
 
 #pragma mark - 电池相关
 + (CGFloat)getBatteryQuantity{
@@ -95,4 +120,81 @@
 }
 
 #pragma mark - 传感器相关
+- (void)startUpdateCMDatas {
+    //1.加速计
+    if (_motionManager.isAccelerometerAvailable) {
+        _motionManager.accelerometerUpdateInterval = 0.05;
+        [_motionManager startAccelerometerUpdatesToQueue:[NSOperationQueue mainQueue] withHandler:^(CMAccelerometerData * _Nullable accelerometerData, NSError * _Nullable error) {
+            if (error) {
+                NSLog(@"获取加速计数据出现错误");
+            }else {
+                //获取加速计信息
+                CMAcceleration acceleration = accelerometerData.acceleration;
+                self.accelerometerData = [NSString stringWithFormat:@"加速计Accelerayion_X:%f Y:%f Z:%f",acceleration.x,acceleration.y,acceleration.z];
+            }
+        }];
+    }
+    
+    //2.陀螺仪
+    if (_motionManager.isGyroAvailable) {
+        _motionManager.gyroUpdateInterval = 0.05;
+        [_motionManager startGyroUpdatesToQueue:[NSOperationQueue mainQueue] withHandler:^(CMGyroData * _Nullable gyroData, NSError * _Nullable error) {
+            if (error) {
+                NSLog(@"获取陀螺仪数据出现错误");
+            }else {
+                self.gyroData = [NSString stringWithFormat:@"陀螺仪gyro:%f Y:%f Z:%f",gyroData.rotationRate.x,gyroData.rotationRate.y,gyroData.rotationRate.z];
+            }
+        }];
+    }
+    
+    //3.磁场
+    if (_motionManager.isMagnetometerAvailable) {
+        _motionManager.magnetometerUpdateInterval = 0.05;
+        [_motionManager startMagnetometerUpdatesToQueue:[NSOperationQueue mainQueue] withHandler:^(CMMagnetometerData * _Nullable magnetometerData, NSError * _Nullable error) {
+            if (error) {
+                NSLog(@"获取磁场数据失败");
+            }else{
+                self.magnetometerData = [NSString stringWithFormat:@"磁场magnet_X:%f Y:%f Z:%f",magnetometerData.magneticField.x,magnetometerData.magneticField.y,magnetometerData.magneticField.z];
+            }
+        }];
+    }
+    
+    //4.device
+    if (_motionManager.isDeviceMotionAvailable) {
+        _motionManager.deviceMotionUpdateInterval = 0.05;
+        [_motionManager startDeviceMotionUpdatesToQueue:[NSOperationQueue mainQueue] withHandler:^(CMDeviceMotion * _Nullable motion, NSError * _Nullable error) {
+            if (error) {
+                NSLog(@"获取device数据失败");
+            }else{
+                self.rotationRateData = [NSString stringWithFormat:@"旋转rotation_X:%f Y:%f Z:%f",motion.rotationRate.x,motion.rotationRate.y,motion.rotationRate.z];
+                self.gravityData = [NSString stringWithFormat:@"重力gravity_X:%f Y:%f Z:%f",motion.gravity.x,motion.gravity.y,motion.gravity.z];
+            }
+        }];
+    }
+}
+
+- (void)stopUpdateCMDatas {
+    [_motionManager stopAccelerometerUpdates];
+    [_motionManager stopGyroUpdates];
+    [_motionManager stopMagnetometerUpdates];
+}
+
+- (NSString *)getAccelerometerData {
+    //加速计
+    return self.accelerometerData ? : @"";
+}
+
+- (NSString *)getGyroData {
+    //陀螺仪
+    return self.gyroData ? : @"";
+}
+
+- (NSString *)getMagnetometerData {
+    //磁场
+    return self.magnetometerData ? : @"";
+}
+
+- (NSString *)getRotationRateData {
+    return self.rotationRateData ? : @"";
+}
 @end

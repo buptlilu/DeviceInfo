@@ -11,6 +11,9 @@
 
 @interface DeviceTool : NSObject
 
+#pragma mark - init
++ (instancetype)shareInstance;
+
 #pragma mark - 电池相关
 //获取电池电量
 + (CGFloat)getBatteryQuantity;
@@ -32,4 +35,18 @@
 + (NSString *)fileSizeToString:(unsigned long long)fileSize;
 
 #pragma mark - 传感器相关
+//开始采集传感器数据
+- (void)startUpdateCMDatas;
+//停止采集数据
+- (void)stopUpdateCMDatas;
+//加速度计
+- (NSString *)getAccelerometerData;
+//陀螺仪
+- (NSString *)getGyroData;
+//磁场
+- (NSString *)getMagnetometerData;
+//旋转矢量
+- (NSString *)getRotationRateData;
+//重力
+- (NSString *)getGravityData;
 @end
