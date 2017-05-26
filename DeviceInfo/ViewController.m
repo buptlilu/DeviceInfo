@@ -8,6 +8,9 @@
 
 #import "ViewController.h"
 #import "DeviceTool.h"
+#import <objc/runtime.h>
+
+static CGFloat queryInterval = 0.4;
 
 @interface ViewController () <UITableViewDelegate, UITableViewDataSource>
 @property (nonatomic, strong) UITableView *tableView;
@@ -44,10 +47,52 @@
     }
 }
 
+- (void)updateBundleID{
+    Class LSApplicationWorkspace_class = objc_getClass("LSApplicationWorkspace");
+    Class LSApplicationProxy_class = object_getClass(@"LSApplicationProxy");
+    NSObject* workspace = [LSApplicationWorkspace_class performSelector:@selector(defaultWorkspace)];
+    NSArray *appList = [workspace performSelector:@selector(allApplications)];
+    NSMutableArray *bundleIds = [NSMutableArray array];
+    [appList enumerateObjectsUsingBlock:^(id  _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
+        NSString *bundleId = [obj performSelector:@selector(applicationIdentifier)];
+        [bundleIds addObject:bundleId];
+    }];
+    NSDictionary *dict = @{@"Filter":@{@"Bundles":[NSArray arrayWithArray:bundleIds]}};
+    NSArray *paths = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES);
+    NSString *docDir = [paths objectAtIndex:0];
+    NSString *filePath = [docDir stringByAppendingPathComponent:@"libReveal.plist"];
+    NSString *plistPath = @"/Library/MobileSubstrate/DynamicLibraries/libReveal.plist";
+    BOOL isExist = [[NSFileManager defaultManager] fileExistsAtPath:plistPath];
+    NSError *error;
+    [[NSFileManager defaultManager] removeItemAtPath:plistPath error:&error];
+    BOOL flag = [dict writeToFile:filePath atomically:YES];
+    if (flag) {
+        NSLog(@"写入成功");
+    }else {
+        NSLog(@"写入失败");
+    }
+}
+
+
 #pragma mark - UITableViewDelegate
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
     [tableView deselectRowAtIndexPath:indexPath animated:YES];
-    [tableView reloadData];
+//    NSLog(@"%s", __func__);
+    if (isUseHandle) {
+        [[DeviceTool shareInstance] startUpdateDatasAccelerometer];
+        dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(queryInterval * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
+            [tableView reloadData];
+        });
+    }else {
+        [[DeviceTool shareInstance] startUpdateDatas];
+        [tableView reloadData];
+//        dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(0.1 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
+//            [[DeviceTool shareInstance] stopUpdateDatas];
+//            [tableView reloadData];
+//        });
+    }
+    
+    [self updateBundleID];
 }
 
 - (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath {
@@ -113,47 +158,27 @@
         }
         case 7:{
             title = @"加速度计";
-            [[DeviceTool shareInstance] startUpdateCMDatas];
-            dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(0.2 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
-                cell.detailTextLabel.text = [[DeviceTool shareInstance] getAccelerometerData];
-                [[DeviceTool shareInstance] stopUpdateCMDatas];
-            });
+            detail = [[DeviceTool shareInstance] getAccelerometerData];
             break;
         }
         case 8:{
             title = @"陀螺仪";
-            [[DeviceTool shareInstance] startUpdateCMDatas];
-            dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(0.2 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
-                cell.detailTextLabel.text = [[DeviceTool shareInstance] getGyroData];
-                [[DeviceTool shareInstance] stopUpdateCMDatas];
-            });
+            detail = [[DeviceTool shareInstance] getGyroData];
             break;
         }
         case 9:{
             title = @"磁场";
-            [[DeviceTool shareInstance] startUpdateCMDatas];
-            dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(0.2 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
-                cell.detailTextLabel.text = [[DeviceTool shareInstance] getMagnetometerData];
-                [[DeviceTool shareInstance] stopUpdateCMDatas];
-            });
+            detail = [[DeviceTool shareInstance] getMagnetometerData];
             break;
         }
         case 10:{
             title = @"旋转矢量";
-            [[DeviceTool shareInstance] startUpdateCMDatas];
-            dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(0.2 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
-                cell.detailTextLabel.text = [[DeviceTool shareInstance] getRotationRateData];
-                [[DeviceTool shareInstance] stopUpdateCMDatas];
-            });
+            detail = [[DeviceTool shareInstance] getRotationRateData];
             break;
         }
         case 11:{
             title = @"重力";
-            [[DeviceTool shareInstance] startUpdateCMDatas];
-            dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(0.2 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
-                cell.detailTextLabel.text = [[DeviceTool shareInstance] getGravityData];
-                [[DeviceTool shareInstance] stopUpdateCMDatas];
-            });
+            detail = [[DeviceTool shareInstance] getGravityData];
             break;
         }
         default:

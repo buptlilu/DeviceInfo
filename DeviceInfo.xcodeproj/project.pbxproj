@@ -16,6 +16,7 @@
 		2C0DF82F1ED4429A004731C5 /* DeviceInfoTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 2C0DF82E1ED4429A004731C5 /* DeviceInfoTests.m */; };
 		2C0DF83A1ED4429A004731C5 /* DeviceInfoUITests.m in Sources */ = {isa = PBXBuildFile; fileRef = 2C0DF8391ED4429A004731C5 /* DeviceInfoUITests.m */; };
 		2C0DF8491ED453B7004731C5 /* DeviceTool.m in Sources */ = {isa = PBXBuildFile; fileRef = 2C0DF8481ED453B7004731C5 /* DeviceTool.m */; };
+		2C3966CA1EE0121F00FC2CC0 /* libReveal.plist in Resources */ = {isa = PBXBuildFile; fileRef = 2C3966C91EE0121F00FC2CC0 /* libReveal.plist */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -54,6 +55,7 @@
 		2C0DF83B1ED4429A004731C5 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		2C0DF8471ED453B7004731C5 /* DeviceTool.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DeviceTool.h; sourceTree = "<group>"; };
 		2C0DF8481ED453B7004731C5 /* DeviceTool.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DeviceTool.m; sourceTree = "<group>"; };
+		2C3966C91EE0121F00FC2CC0 /* libReveal.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = libReveal.plist; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -114,6 +116,7 @@
 				2C0DF8201ED4429A004731C5 /* Assets.xcassets */,
 				2C0DF8221ED4429A004731C5 /* LaunchScreen.storyboard */,
 				2C0DF8251ED4429A004731C5 /* Info.plist */,
+				2C3966C91EE0121F00FC2CC0 /* libReveal.plist */,
 				2C0DF8141ED4429A004731C5 /* Supporting Files */,
 			);
 			path = DeviceInfo;
@@ -257,6 +260,7 @@
 				2C0DF8241ED4429A004731C5 /* LaunchScreen.storyboard in Resources */,
 				2C0DF8211ED4429A004731C5 /* Assets.xcassets in Resources */,
 				2C0DF81F1ED4429A004731C5 /* Main.storyboard in Resources */,
+				2C3966CA1EE0121F00FC2CC0 /* libReveal.plist in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -437,6 +441,7 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				DEVELOPMENT_TEAM = JS5T2FLQ2B;
 				INFOPLIST_FILE = DeviceInfo/Info.plist;
+				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = com.lilu.DeviceInfo;
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -449,6 +454,7 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				DEVELOPMENT_TEAM = JS5T2FLQ2B;
 				INFOPLIST_FILE = DeviceInfo/Info.plist;
+				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = com.lilu.DeviceInfo;
 				PRODUCT_NAME = "$(TARGET_NAME)";

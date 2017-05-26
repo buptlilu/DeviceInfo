@@ -9,6 +9,9 @@
 #import <Foundation/Foundation.h>
 #import <UIKit/UIKit.h>
 
+static const CGFloat updateInterval = 0.01;
+static const BOOL isUseHandle = NO;
+
 @interface DeviceTool : NSObject
 
 #pragma mark - init
@@ -36,9 +39,17 @@
 
 #pragma mark - 传感器相关
 //开始采集传感器数据
-- (void)startUpdateCMDatas;
+- (void)startUpdateDatas;
+- (void)startUpdateDatasAccelerometer;
+- (void)startUpdateDatasGyro;
+- (void)startUpdateDatasMagnetometer;
+- (void)startUpdateDatasDevice;
 //停止采集数据
-- (void)stopUpdateCMDatas;
+- (void)stopUpdateDatas;
+- (void)stopUpdateDatasAccelerometer;
+- (void)stopUpdateDatasGyro;
+- (void)stopUpdateDatasMagnetometer;
+- (void)stopUpdateDatasDevice;
 //加速度计
 - (NSString *)getAccelerometerData;
 //陀螺仪
