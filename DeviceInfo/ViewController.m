@@ -9,7 +9,7 @@
 #import "ViewController.h"
 #import "DeviceTool.h"
 
-static CGFloat queryInterval = 0.1;
+static CGFloat queryInterval = 0.4;
 
 @interface ViewController () <UITableViewDelegate, UITableViewDataSource>
 @property (nonatomic, strong) UITableView *tableView;
@@ -49,11 +49,19 @@ static CGFloat queryInterval = 0.1;
 #pragma mark - UITableViewDelegate
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
     [tableView deselectRowAtIndexPath:indexPath animated:YES];
-    NSLog(@"%s", __func__);
-    [[DeviceTool shareInstance] startUpdateDatasAccelerometer];
-    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(queryInterval * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
-        [tableView reloadData];
-    });
+//    NSLog(@"%s", __func__);
+    if (isUseHandle) {
+        [[DeviceTool shareInstance] startUpdateDatasAccelerometer];
+        dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(queryInterval * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
+            [tableView reloadData];
+        });
+    }else {
+        [[DeviceTool shareInstance] startUpdateDatas];
+        dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(0.1 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
+            [[DeviceTool shareInstance] stopUpdateDatas];
+            [tableView reloadData];
+        });
+    }
 }
 
 - (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath {

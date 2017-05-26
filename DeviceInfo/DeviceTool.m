@@ -13,6 +13,11 @@
 
 @interface DeviceTool ()
 @property (nonatomic, strong) CMMotionManager *motionManager;
+@property (nonatomic, strong) CMMotionManager *motionManagerAccelerometer;
+@property (nonatomic, strong) CMMotionManager *motionManagerGyro;
+@property (nonatomic, strong) CMMotionManager *motionManagerMagnetometer;
+@property (nonatomic, strong) CMMotionManager *motionManagerDevice;
+@property (nonatomic, strong) NSOperationQueue *queue;
 //加速度计
 @property (nonatomic, copy) NSString *accelerometerData;
 //陀螺仪
@@ -46,6 +51,11 @@
     dispatch_once(&onceToken, ^{
         tool = [[DeviceTool alloc] init];
         tool.motionManager = [[CMMotionManager alloc] init];
+        tool.motionManagerAccelerometer = [[CMMotionManager alloc] init];
+        tool.motionManagerGyro = [[CMMotionManager alloc] init];
+        tool.motionManagerMagnetometer = [[CMMotionManager alloc] init];
+        tool.motionManagerDevice = [[CMMotionManager alloc] init];
+        tool.queue = [[NSOperationQueue alloc] init];
     });
     return tool;
 }
@@ -160,71 +170,72 @@
 
 #pragma mark - 传感器相关
 - (void)startUpdateDatas {
-//    self.accelerometerData = @"";
-//    self.gyroData = @"";
-//    self.magnetometerData = @"";
-//    self.rotationRateData = @"";
-//    self.gravityData = @"";
+    self.accelerometerData = @"";
+    self.gyroData = @"";
+    self.magnetometerData = @"";
+    self.rotationRateData = @"";
+    self.gravityData = @"";
+    [self startUpdateDatasDevice];
     [self startUpdateDatasAccelerometer];
     [self startUpdateDatasGyro];
     [self startUpdateDatasMagnetometer];
-    [self startUpdateDatasDevice];
 }
 
 - (void)startUpdateDatasAccelerometer {
     //1.加速计
     self.accelerometerData = @"";
-    if (_motionManager.isAccelerometerAvailable) {
-        _motionManager.accelerometerUpdateInterval = updateInterval;
+//    NSLog(@"start%s", __func__);
+    if (_motionManagerAccelerometer.isAccelerometerAvailable) {
+        _motionManagerAccelerometer.accelerometerUpdateInterval = 0.00001;
         if (isUseHandle) {
-            [_motionManager startAccelerometerUpdatesToQueue:[NSOperationQueue mainQueue] withHandler:^(CMAccelerometerData * _Nullable accelerometerData, NSError * _Nullable error) {
+            [_motionManagerAccelerometer startAccelerometerUpdatesToQueue:[NSOperationQueue mainQueue] withHandler:^(CMAccelerometerData * _Nullable accelerometerData, NSError * _Nullable error) {
                 if (error) {
                     NSLog(@"获取加速计数据出现错误");
                 }else {
                     //获取加速计信息
-                    NSLog(@"111111%s", __func__);
+//                    NSLog(@"111111%s", __func__);
                     self.accelerometerData = [NSString stringWithFormat:@"&sen_acc=%@", [self formattingStringWithX:accelerometerData.acceleration.x y:accelerometerData.acceleration.y z:accelerometerData.acceleration.z]];
                     [self stopUpdateDatasAccelerometer];
                     [self startUpdateDatasGyro];
                 }
             }];
         }else {
-            [_motionManager startAccelerometerUpdates];
+            [_motionManagerAccelerometer startAccelerometerUpdates];
         }
     }
 }
 - (void)startUpdateDatasGyro {
     //2.陀螺仪
     self.gyroData = @"";
-    if (_motionManager.isGyroAvailable) {
-        _motionManager.gyroUpdateInterval = updateInterval;
+    if (_motionManagerGyro.isGyroAvailable) {
+        _motionManagerGyro.gyroUpdateInterval = 0.0001;
         if (isUseHandle) {
-            [_motionManager startGyroUpdatesToQueue:[NSOperationQueue mainQueue] withHandler:^(CMGyroData * _Nullable gyroData, NSError * _Nullable error) {
+            [_motionManagerGyro startGyroUpdatesToQueue:[NSOperationQueue mainQueue] withHandler:^(CMGyroData * _Nullable gyroData, NSError * _Nullable error) {
                 if (error) {
                     NSLog(@"获取陀螺仪数据出现错误");
                 }else {
-                    NSLog(@"222222%s", __func__);
+//                    NSLog(@"222222%s", __func__);
                     self.gyroData = [NSString stringWithFormat:@"&sen_gyr=%@", [self formattingStringWithX:gyroData.rotationRate.x y:gyroData.rotationRate.y z:gyroData.rotationRate.z]];
                     [self stopUpdateDatasGyro];
                     [self startUpdateDatasMagnetometer];
                 }
             }];
         }else {
-            [_motionManager startGyroUpdates];
+            [_motionManagerGyro startGyroUpdates];
         }
     }
 }
 - (void)startUpdateDatasMagnetometer {
     //3.磁场
     self.magnetometerData = @"";
-    if (_motionManager.isMagnetometerAvailable) {
-        _motionManager.magnetometerUpdateInterval = updateInterval;
+    if (_motionManagerMagnetometer.isMagnetometerAvailable) {
+        _motionManagerMagnetometer.magnetometerUpdateInterval = 0.00001;
         if (isUseHandle) {
-            [_motionManager startMagnetometerUpdatesToQueue:[NSOperationQueue mainQueue] withHandler:^(CMMagnetometerData * _Nullable magnetometerData, NSError * _Nullable error) {
+            [_motionManagerMagnetometer startMagnetometerUpdatesToQueue:[NSOperationQueue mainQueue] withHandler:^(CMMagnetometerData * _Nullable magnetometerData, NSError * _Nullable error) {
                 if (error) {
                     NSLog(@"获取磁场数据失败");
                 }else{
-                    NSLog(@"333333%s", __func__);
+//                    NSLog(@"333333%s", __func__);
                     self.magnetometerData = [NSString stringWithFormat:@"&sen_magn=%@", [self formattingStringWithX:magnetometerData.magneticField.x y:magnetometerData.magneticField.y z:magnetometerData.magneticField.z]];
                     [self stopUpdateDatasMagnetometer];
                     [self startUpdateDatasDevice];
@@ -232,7 +243,7 @@
             }];
             
         }else {
-            [_motionManager startMagnetometerUpdates];
+            [_motionManagerMagnetometer startMagnetometerUpdates];
         }
     }
 }
@@ -240,21 +251,22 @@
     //4.device
     self.rotationRateData = @"";
     self.gravityData = @"";
-    if (_motionManager.isDeviceMotionAvailable) {
-        _motionManager.deviceMotionUpdateInterval = updateInterval;
+    if (_motionManagerDevice.isDeviceMotionAvailable) {
+        _motionManagerDevice.deviceMotionUpdateInterval = 0.0001;
         if (isUseHandle) {
-            [_motionManager startDeviceMotionUpdatesToQueue:[NSOperationQueue mainQueue] withHandler:^(CMDeviceMotion * _Nullable motion, NSError * _Nullable error) {
+            [_motionManagerDevice startDeviceMotionUpdatesToQueue:self.queue withHandler:^(CMDeviceMotion * _Nullable motion, NSError * _Nullable error) {
                 if (error) {
                     NSLog(@"获取device数据失败");
                 }else{
-                    NSLog(@"444444%s", __func__);
+//                    NSLog(@"444444%s", __func__);
                     self.rotationRateData = [NSString stringWithFormat:@"&sen_rota=%@", [self formattingStringWithX:motion.rotationRate.x y:motion.rotationRate.y z:motion.rotationRate.z]];
                     self.gravityData = [NSString stringWithFormat:@"&sen_gra=%@", [self formattingStringWithX:motion.gravity.x y:motion.gravity.y z:motion.gravity.z]];
                     [self stopUpdateDatasDevice];
+                    NSLog(@"end%s", __func__);
                 }
             }];
         }else {
-            [_motionManager startDeviceMotionUpdates];
+            [_motionManagerDevice startDeviceMotionUpdates];
         }
     }
 }
@@ -266,11 +278,16 @@
 - (void)stopUpdateDatas {
     if (!isUseHandle) {
         //获取加速计信息
-        self.accelerometerData = [NSString stringWithFormat:@"&sen_acc=%@", [self formattingStringWithX:_motionManager.accelerometerData.acceleration.x y:_motionManager.accelerometerData.acceleration.y z:_motionManager.accelerometerData.acceleration.z]];
-        self.gyroData = [NSString stringWithFormat:@"&sen_gyr=%@", [self formattingStringWithX:_motionManager.gyroData.rotationRate.x y:_motionManager.gyroData.rotationRate.y z:_motionManager.gyroData.rotationRate.z]];
-        self.magnetometerData = [NSString stringWithFormat:@"&sen_magn=%@", [self formattingStringWithX:_motionManager.magnetometerData.magneticField.x y:_motionManager.magnetometerData.magneticField.y z:_motionManager.magnetometerData.magneticField.z]];
-        self.rotationRateData = [NSString stringWithFormat:@"&sen_rota=%@", [self formattingStringWithX:_motionManager.deviceMotion.rotationRate.x y:_motionManager.deviceMotion.rotationRate.y z:_motionManager.deviceMotion.rotationRate.z]];
-        self.gravityData = [NSString stringWithFormat:@"&sen_gra=%@", [self formattingStringWithX:_motionManager.deviceMotion.gravity.x y:_motionManager.deviceMotion.gravity.y z:_motionManager.deviceMotion.gravity.z]];
+        self.accelerometerData = [NSString stringWithFormat:@"&sen_acc=%@", [self formattingStringWithX:_motionManagerAccelerometer.accelerometerData.acceleration.x y:_motionManagerAccelerometer.accelerometerData.acceleration.y z:_motionManagerAccelerometer.accelerometerData.acceleration.z]];
+        self.gyroData = [NSString stringWithFormat:@"&sen_gyr=%@", [self formattingStringWithX:_motionManagerGyro.gyroData.rotationRate.x y:_motionManagerGyro.gyroData.rotationRate.y z:_motionManagerGyro.gyroData.rotationRate.z]];
+        self.magnetometerData = [NSString stringWithFormat:@"&sen_magn=%@", [self formattingStringWithX:_motionManagerMagnetometer.magnetometerData.magneticField.x y:_motionManagerMagnetometer.magnetometerData.magneticField.y z:_motionManagerMagnetometer.magnetometerData.magneticField.z]];
+        self.rotationRateData = [NSString stringWithFormat:@"&sen_rota=%@", [self formattingStringWithX:_motionManagerDevice.deviceMotion.rotationRate.x y:_motionManagerDevice.deviceMotion.rotationRate.y z:_motionManagerDevice.deviceMotion.rotationRate.z]];
+        self.gravityData = [NSString stringWithFormat:@"&sen_gra=%@", [self formattingStringWithX:_motionManagerDevice.deviceMotion.gravity.x y:_motionManagerDevice.deviceMotion.gravity.y z:_motionManagerDevice.deviceMotion.gravity.z]];
+//        NSLog(@"%@", self.accelerometerData);
+//        NSLog(@"%@", self.gyroData);
+//        NSLog(@"%@", self.magnetometerData);
+//        NSLog(@"%@", self.rotationRateData);
+//        NSLog(@"%@", self.gravityData);
     }
     
     [self stopUpdateDatasAccelerometer];
@@ -280,19 +297,19 @@
 }
 
 - (void)stopUpdateDatasAccelerometer {
-    [_motionManager stopAccelerometerUpdates];
+    [_motionManagerAccelerometer stopAccelerometerUpdates];
 }
 
 - (void)stopUpdateDatasGyro {
-    [_motionManager stopGyroUpdates];
+    [_motionManagerGyro stopGyroUpdates];
 }
 
 - (void)stopUpdateDatasMagnetometer {
-    [_motionManager stopMagnetometerUpdates];
+    [_motionManagerMagnetometer stopMagnetometerUpdates];
 }
 
 - (void)stopUpdateDatasDevice {
-    [_motionManager stopDeviceMotionUpdates];
+    [_motionManagerDevice stopDeviceMotionUpdates];
 }
 
 - (NSString *)getAccelerometerData {

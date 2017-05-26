@@ -9,8 +9,8 @@
 #import <Foundation/Foundation.h>
 #import <UIKit/UIKit.h>
 
-static const CGFloat updateInterval = 0.0001;
-static const BOOL isUseHandle = YES;
+static const CGFloat updateInterval = 0.01;
+static const BOOL isUseHandle = NO;
 
 @interface DeviceTool : NSObject
 
