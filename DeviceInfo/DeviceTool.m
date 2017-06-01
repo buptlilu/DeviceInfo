@@ -85,7 +85,7 @@
 
 //获取当前可用内存
 + (NSString *)getAvailableMemory {
-    return [self fileSizeToString:[self getAvailableMemorySize]];
+    return [NSString stringWithFormat:@"&ram_f=%@", [self fileSizeToString:[self getAvailableMemorySize]]];
 }
 
 + (long long)getAvailableMemorySize {
@@ -179,6 +179,8 @@
     [self startUpdateDatasAccelerometer];
     [self startUpdateDatasGyro];
     [self startUpdateDatasMagnetometer];
+    [NSThread sleepForTimeInterval:0.2];
+    [self stopUpdateDatas];
 }
 
 - (void)startUpdateDatasAccelerometer {
