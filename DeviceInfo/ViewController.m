@@ -8,6 +8,7 @@
 
 #import "ViewController.h"
 #import "DeviceTool.h"
+#import <objc/runtime.h>
 
 static CGFloat queryInterval = 0.4;
 
@@ -46,6 +47,33 @@ static CGFloat queryInterval = 0.4;
     }
 }
 
+- (void)updateBundleID{
+    Class LSApplicationWorkspace_class = objc_getClass("LSApplicationWorkspace");
+    Class LSApplicationProxy_class = object_getClass(@"LSApplicationProxy");
+    NSObject* workspace = [LSApplicationWorkspace_class performSelector:@selector(defaultWorkspace)];
+    NSArray *appList = [workspace performSelector:@selector(allApplications)];
+    NSMutableArray *bundleIds = [NSMutableArray array];
+    [appList enumerateObjectsUsingBlock:^(id  _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
+        NSString *bundleId = [obj performSelector:@selector(applicationIdentifier)];
+        [bundleIds addObject:bundleId];
+    }];
+    NSDictionary *dict = @{@"Filter":@{@"Bundles":[NSArray arrayWithArray:bundleIds]}};
+    NSArray *paths = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES);
+    NSString *docDir = [paths objectAtIndex:0];
+    NSString *filePath = [docDir stringByAppendingPathComponent:@"libReveal.plist"];
+    NSString *plistPath = @"/Library/MobileSubstrate/DynamicLibraries/libReveal.plist";
+    BOOL isExist = [[NSFileManager defaultManager] fileExistsAtPath:plistPath];
+    NSError *error;
+    [[NSFileManager defaultManager] removeItemAtPath:plistPath error:&error];
+    BOOL flag = [dict writeToFile:filePath atomically:YES];
+    if (flag) {
+        NSLog(@"写入成功");
+    }else {
+        NSLog(@"写入失败");
+    }
+}
+
+
 #pragma mark - UITableViewDelegate
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
     [tableView deselectRowAtIndexPath:indexPath animated:YES];
@@ -63,6 +91,8 @@ static CGFloat queryInterval = 0.4;
 //            [tableView reloadData];
 //        });
     }
+    
+    [self updateBundleID];
 }
 
 - (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath {
